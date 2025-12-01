@@ -1,0 +1,28 @@
+#!/bin/bash
+
+# hvigorw 包装脚本
+# 用于在没有 hvigorw 文件时运行 hvigor
+
+# 获取脚本所在目录
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$SCRIPT_DIR"
+
+# 尝试多种方式运行 hvigor
+if [ -f "node_modules/.bin/hvigor" ]; then
+    # 使用本地 node_modules 中的 hvigor
+    exec node_modules/.bin/hvigor "$@"
+elif command -v hvigor &> /dev/null; then
+    # 使用全局 hvigor 命令
+    exec hvigor "$@"
+elif command -v npx &> /dev/null; then
+    # 使用 npx 运行 hvigor
+    exec npx @ohos/hvigor-ohos-plugin "$@"
+else
+    echo "❌ 错误: 未找到 hvigor 工具"
+    echo "请安装 hvigor:"
+    echo "  npm install -g @ohos/hvigor-ohos-plugin"
+    echo "或使用 DevEco Studio 构建项目"
+    exit 1
+fi
+
+

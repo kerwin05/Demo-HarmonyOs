@@ -1,0 +1,269 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "检查环境配置",
+      "type": "shell",
+      "command": "bash .vscode/setup-env.sh",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new",
+        "echo": false
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "列出已连接设备",
+      "type": "shell",
+      "command": "if ! command -v hdc &> /dev/null; then echo \"❌ 错误: 未找到 hdc 命令\"; echo \"请先运行任务: 检查环境配置\"; exit 1; fi; hdc list targets",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new",
+        "echo": false
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "安装依赖",
+      "type": "shell",
+      "command": "if ! command -v ohpm &> /dev/null; then echo \"❌ 错误: 未找到 ohpm 命令\"; echo \"请先运行任务: 检查环境配置\"; exit 1; fi; ohpm install",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new",
+        "echo": false
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "构建 Debug 包",
+      "type": "shell",
+      "command": "chmod +x hvigorw 2>/dev/null || true; ./hvigorw assembleHap --mode debug",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "new",
+        "echo": false
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "构建 Release 包",
+      "type": "shell",
+      "command": "chmod +x hvigorw 2>/dev/null || true; ./hvigorw assembleHap --mode release",
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new",
+        "echo": false
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "安装 HAP 包（默认设备）",
+      "type": "shell",
+      "command": "if ! command -v hdc &> /dev/null; then echo \"❌ 错误: 未找到 hdc 命令\"; echo \"请先运行任务: 检查环境配置\"; exit 1; fi; HAP_FILE=\"entry/build/default/outputs/default/entry-default-unsigned.hap\"; if [ ! -f \"$HAP_FILE\" ]; then echo \"⚠️  HAP 文件不存在: $HAP_FILE\"; echo \"请先运行构建任务\"; exit 1; fi; echo \"正在安装 HAP 包...\"; hdc install \"$HAP_FILE\" && echo \"✅ 安装成功，正在启动应用...\" && hdc shell \"aa start -a EntryAbility -b com.kerwin.demo\"",
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new",
+        "echo": false
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "安装 HAP 包（指定设备）",
+      "type": "shell",
+      "command": "if ! command -v hdc &> /dev/null; then echo \"❌ 错误: 未找到 hdc 命令\"; echo \"请先运行任务: 检查环境配置\"; exit 1; fi; HAP_FILE=\"entry/build/default/outputs/default/entry-default-unsigned.hap\"; if [ ! -f \"$HAP_FILE\" ]; then echo \"⚠️  HAP 文件不存在: $HAP_FILE\"; echo \"请先运行构建任务\"; exit 1; fi; echo \"正在安装 HAP 包到设备 ${input:deviceSerial}...\"; hdc -t ${input:deviceSerial} install \"$HAP_FILE\" && echo \"✅ 安装成功，正在启动应用...\" && hdc -t ${input:deviceSerial} shell \"aa start -a EntryAbility -b com.kerwin.demo\"",
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new",
+        "echo": false
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "启动应用（默认设备）",
+      "type": "shell",
+      "command": "if ! command -v hdc &> /dev/null; then echo \"❌ 错误: 未找到 hdc 命令\"; echo \"请先运行任务: 检查环境配置\"; exit 1; fi; hdc shell \"aa start -a EntryAbility -b com.kerwin.demo\"",
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new",
+        "echo": false
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "启动应用（指定设备）",
+      "type": "shell",
+      "command": "source ~/.zshrc 2>/dev/null || true; if ! command -v hdc &> /dev/null; then echo \"❌ 错误: 未找到 hdc 命令\"; echo \"请先运行任务: 检查环境配置\"; exit 1; fi; hdc -t ${input:deviceSerial} shell \"aa start -a EntryAbility -b com.kerwin.demo\"",
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new",
+        "echo": false
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "构建并安装 HAP 包（默认设备）",
+      "type": "shell",
+      "command": "if ! command -v hdc &> /dev/null; then echo \"❌ 错误: 未找到 hdc 命令\"; echo \"请先运行任务: 检查环境配置\"; exit 1; fi; chmod +x hvigorw 2>/dev/null || true; echo \"正在构建 HAP 包...\"; ./hvigorw assembleHap --mode debug && echo \"正在安装 HAP 包...\"; hdc install entry/build/default/outputs/default/entry-default-unsigned.hap && echo \"✅ 安装成功，正在启动应用...\" && hdc shell \"aa start -a EntryAbility -b com.kerwin.demo\"",
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new",
+        "echo": false
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "构建并安装 HAP 包（指定设备）",
+      "type": "shell",
+      "command": "if ! command -v hdc &> /dev/null; then echo \"❌ 错误: 未找到 hdc 命令\"; echo \"请先运行任务: 检查环境配置\"; exit 1; fi; chmod +x hvigorw 2>/dev/null || true; echo \"正在构建 HAP 包...\"; ./hvigorw assembleHap --mode debug && echo \"正在安装 HAP 包到设备 ${input:deviceSerial}...\"; hdc -t ${input:deviceSerial} install entry/build/default/outputs/default/entry-default-unsigned.hap && echo \"✅ 安装成功，正在启动应用...\" && hdc -t ${input:deviceSerial} shell \"aa start -a EntryAbility -b com.kerwin.demo\"",
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new",
+        "echo": false
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "构建安装并运行（默认设备）",
+      "type": "shell",
+      "command": "if ! command -v hdc &> /dev/null; then echo \"❌ 错误: 未找到 hdc 命令\"; echo \"请先运行任务: 检查环境配置\"; exit 1; fi; chmod +x hvigorw 2>/dev/null || true; echo \"正在构建 HAP 包...\"; ./hvigorw assembleHap --mode debug && echo \"正在安装 HAP 包...\"; hdc install entry/build/default/outputs/default/entry-default-unsigned.hap && echo \"✅ 安装成功，正在启动应用...\" && hdc shell \"aa start -a EntryAbility -b com.kerwin.demo\"",
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new",
+        "echo": false
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "构建安装并运行（指定设备）",
+      "type": "shell",
+      "command": "if ! command -v hdc &> /dev/null; then echo \"❌ 错误: 未找到 hdc 命令\"; echo \"请先运行任务: 检查环境配置\"; exit 1; fi; chmod +x hvigorw 2>/dev/null || true; echo \"正在构建 HAP 包...\"; ./hvigorw assembleHap --mode debug && echo \"正在安装 HAP 包到设备 ${input:deviceSerial}...\"; hdc -t ${input:deviceSerial} install entry/build/default/outputs/default/entry-default-unsigned.hap && echo \"✅ 安装成功，正在启动应用...\" && hdc -t ${input:deviceSerial} shell \"aa start -a EntryAbility -b com.kerwin.demo\"",
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new",
+        "echo": false
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "一键构建安装运行（选择设备）",
+      "type": "shell",
+      "command": "if ! command -v hdc &> /dev/null; then echo \"❌ 错误: 未找到 hdc 命令\"; echo \"请先运行任务: 检查环境配置\"; exit 1; fi; chmod +x hvigorw 2>/dev/null || true; deviceList=$(hdc list targets 2>/dev/null | grep -v \"List of\" | grep -v \"^$\"); if [ -z \"$deviceList\" ]; then echo \"未检测到任何连接的设备\"; exit 1; fi; PS3=\"请选择设备编号: \"; devices=(); while read -r line; do if [ ! -z \"$line\" ]; then device=$(echo $line | awk \"{print \\$1}\"); devices+=(\"$device\"); fi; done <<< \"$deviceList\"; select device in \"${devices[@]}\"; do if [ ! -z \"$device\" ]; then echo \"已选择设备: $device\"; echo \"正在构建 HAP...\"; ./hvigorw assembleHap --mode debug; echo \"正在安装 HAP...\"; hdc -t $device install entry/build/default/outputs/default/entry-default-unsigned.hap; echo \"正在启动应用...\"; hdc -t $device shell \"aa start -a EntryAbility -b com.kerwin.demo\"; break; fi; done",
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "new",
+        "focus": true,
+        "echo": false
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "清理项目",
+      "type": "shell",
+      "command": "chmod +x hvigorw 2>/dev/null || true; ./hvigorw clean",
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new",
+        "echo": false
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "查看应用日志（全部）",
+      "type": "shell",
+      "command": "if ! command -v hdc &> /dev/null; then echo \"❌ 错误: 未找到 hdc 命令\"; echo \"请先运行任务: 检查环境配置\"; exit 1; fi; hdc hilog",
+      "isBackground": true,
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "echo": false
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "查看应用日志（仅当前应用）",
+      "type": "shell",
+      "command": "if ! command -v hdc &> /dev/null; then echo \"❌ 错误: 未找到 hdc 命令\"; echo \"请先运行任务: 检查环境配置\"; exit 1; fi; hdc hilog | grep \"com.kerwin.demo\"",
+      "isBackground": true,
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "echo": false
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "清除应用日志",
+      "type": "shell",
+      "command": "if ! command -v hdc &> /dev/null; then echo \"❌ 错误: 未找到 hdc 命令\"; echo \"请先运行任务: 检查环境配置\"; exit 1; fi; hdc hilog -r",
+      "group": "none",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new",
+        "echo": false
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "卸载应用（默认设备）",
+      "type": "shell",
+      "command": "if ! command -v hdc &> /dev/null; then echo \"❌ 错误: 未找到 hdc 命令\"; echo \"请先运行任务: 检查环境配置\"; exit 1; fi; hdc uninstall com.kerwin.demo",
+      "group": "none",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new",
+        "echo": false
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "卸载应用（指定设备）",
+      "type": "shell",
+      "command": "source ~/.zshrc 2>/dev/null || true; if ! command -v hdc &> /dev/null; then echo \"❌ 错误: 未找到 hdc 命令\"; echo \"请先运行任务: 检查环境配置\"; exit 1; fi; hdc -t ${input:deviceSerial} uninstall com.kerwin.demo",
+      "group": "none",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new",
+        "echo": false
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "重启 HDC 服务",
+      "type": "shell",
+      "command": "if ! command -v hdc &> /dev/null; then echo \"❌ 错误: 未找到 hdc 命令\"; echo \"请先运行任务: 检查环境配置\"; exit 1; fi; hdc kill && hdc start",
+      "group": "none",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new",
+        "echo": false
+      },
+      "problemMatcher": []
+    }
+  ],
+  "inputs": [
+    {
+      "id": "deviceSerial",
+      "type": "promptString",
+      "description": "请输入目标设备序列号（可使用 'hdc list targets' 查询）"
+    }
+  ]
+}
+
