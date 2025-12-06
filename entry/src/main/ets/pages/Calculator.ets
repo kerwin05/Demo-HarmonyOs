@@ -1,6 +1,6 @@
 @Entry
 @Component
-struct Index {
+struct Calculator {
   // 显示的计算结果
   @State displayValue: string = '0'
   // 当前输入的字符串
@@ -322,3 +322,4 @@ struct Index {
     this.displayValue = formattedValue
   }
 }
+
